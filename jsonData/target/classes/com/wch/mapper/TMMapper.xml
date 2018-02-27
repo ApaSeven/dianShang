@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+		<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wch.mapper.TMMapper">
+
+	<select id="select_tm_all" resultType="com.wch.bean.T_MALL_TRADE_MARK">
+		select * from t_mall_trade_mark where id in
+		(select pp_id from t_mall_tm_class where flbh1 = #{class1_id})
+	</select>
+</mapper>

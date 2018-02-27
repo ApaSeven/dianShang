@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper SYSTEM "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.atguigu.mapper.SkuListMapper">
+
+<!--根据二级分类id查询sku  -->
+
+	<select id="select_sku_list_by_attr" parameterType="Map" resultMap="select_sku_list_by_class2_map">
+		select sku.id as
+		sku_id , spu.id as spu_id , tm.id as
+		tm_id ,
+		sku.*,spu.*,tm.* from
+		t_mall_sku sku,
+		t_mall_product spu,
+		t_mall_trade_mark tm
+		where
+		sku.shp_id
+		= spu.Id AND
+		spu.pp_id = tm.Id and
+		spu.flbh2 = #{class_2_id}
+		
+		${sql}
+	</select>
+
+	
+	
+<!--根据多个属性查询sku  -->
+	
+	<select id="select_sku_list_by_class2" parameterType="int" resultMap="select_sku_list_by_class2_map">
+		select sku.id as
+		sku_id , spu.id as spu_id , tm.id as
+		tm_id ,
+		sku.*,spu.*,tm.* from
+		t_mall_sku sku,
+		t_mall_product spu,
+		t_mall_trade_mark tm
+		where
+		sku.shp_id
+		= spu.Id AND
+		spu.pp_id = tm.Id and
+		spu.flbh2 = #{class_2_id}
+	</select>
+	
+	<resultMap type="com.atguigu.bean.OBJECT_T_MALL_SKU" id="select_sku_list_by_class2_map" autoMapping="true">
+		<result column="sku_id" property="id"/>
+		<association property="spu" javaType="com.atguigu.bean.T_MALL_PRODUCT" autoMapping="true">
+			<result column="spu_id" property="id"/>
+		</association>
+			
+		<association property="tm" javaType="com.atguigu.bean.T_MALL_TRADE_MARK" autoMapping="true">
+			<result column="tm_id" property="id"/>
+		</association>
+	</resultMap>
+	
+<!-- 查询商品详情 -->
+	<select id="get_sku_detail" parameterType="Map" resultMap="get_sku_detail_map">
+		select attr.shxm_mch as
+		attrName,CONCAT(val.shxzh,val.shxzh_mch) as 
+		valueName,sku.id as sku_id
+		,spu.id as
+		spu_id,img.id as
+		img_id,spu.*,img.*,sku.*from
+		t_mall_product
+		spu,
+		t_mall_sku
+		sku,
+		t_mall_product_image img,
+		t_mall_sku_attr_value av,
+		t_mall_attr attr,
+		t_mall_value val
+		where spu.id = sku.shp_id and
+		spu.id = img.shp_id and
+		sku.id = av.sku_id and
+		av.shxm_id = attr.id and
+		av.shxzh_id = val.id and
+		attr.id = val.shxm_id and
+		sku.id = #{sku_id}
+	</select>
+	
+<!--association封装单个对象   collection封装多个对象的集合-->
+	<resultMap type="com.atguigu.bean.DETAIL_T_MALL_SKU" id="get_sku_detail_map" autoMapping="true">
+		<result column="sku_id" property="id"/>
+		<association property="spu" javaType="com.atguigu.bean.T_MALL_PRODUCT" autoMapping="true">
+			<result column="spu_id" property="id"/>
+		</association>
+		
+		<collection property="list_image" ofType="com.atguigu.bean.T_MALL_PRODUCT_IMAGE" autoMapping="true">
+			<result column="img_id" property="id"/>
+		</collection>
+		
+		<collection property="list_av_name" ofType="com.atguigu.bean.OBJECT_T_MALL_AV_NAME" autoMapping="true">
+			
+		</collection>
+	</resultMap>
+
+
+<!-- 查spu下的sku集合 -->
+	<select id="get_sku_list_by_spu_id" parameterType="int" resultType="com.atguigu.bean.T_MALL_SKU">
+		select * from t_mall_sku where shp_id = #{spu_id};
+	</select>
+	
+	
+</mapper>
